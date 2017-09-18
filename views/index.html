@@ -1,12 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>DZGUI</title>
-</head>
-<body>
-    
-</body>
+<html lang="zh-CN">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+		<title>Bootstrap 101 Template</title>
+
+		<!-- Bootstrap -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<style>
+			.panel-body {
+				margin: 50px 20px;
+				-webkit-user-select: none;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div class="container">
+			<div class="row" style="padding-top:80px">
+				<div class="col-xs-6">
+					<div class="panel panel-default" id="new_file">
+						<div class="panel-body">
+							<p style="text-align: center;">Drag the <b>new</b> zip file here</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-6">
+					<div class="panel panel-default" id="old_file">
+						<div class="panel-body">
+							<p style="text-align: center;">Drag the <b>old</b> zip file here</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row" id="pgs">
+				<div class="col-xs-12">
+					<div class="progress ">
+						<div id="pgs" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;background-color: #dddddd;">
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<div class="row">
+				<div class="col-xs-12">
+					<button class="btn btn-group-justified btn-default" id="start_btn">
+                    <h3><b>GENERATE</b></h3>
+                </button>
+				</div>
+			</div>
+			<div class="row" style="margin-top: 100px;">
+				<div class="col-xs-12">
+
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			window.nodeRequire = require;
+			delete window.require;
+			delete window.exports;
+			delete window.module;
+		</script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script type="text/javascript">
+			//$("#pgs").attr("style",'width:100%');
+			//$("#pgs").css('background-color':'#FF0000');
+			var new_file_path,old_file_path;
+			const { ipcRenderer } = nodeRequire('electron')
+			$("#new_file").on("drop", (e) => {
+				e.preventDefault();
+				if(e.originalEvent.dataTransfer.files.length > 1) {
+					alert("only one zip file ")
+				} else {
+					var sf = e.originalEvent.dataTransfer.files[0];
+					new_file_path=sf.path;
+					console.log(e.originalEvent.dataTransfer.files)
+					$("#new_file>div>p").html("<b>" + sf.name + "</b>")
+				}
+			});
+			$("#new_file").on("dragover", function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+			})
+			$("#old_file").on("drop", (e) => {
+				e.preventDefault();
+				if(e.originalEvent.dataTransfer.files.length > 1) {
+					alert("only one zip file ")
+				} else {
+					var sf = e.originalEvent.dataTransfer.files[0];
+					console.log(e.originalEvent.dataTransfer.files);
+					old_file_path=sf.path;
+					$("#old_file>div>p").html("<b>" + sf.name + "</b>")
+				}
+			});
+			$("#old_file").on("dragover", function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+			});
+			$("#start_btn").on("click",(e)=>{
+				let result=ipcRenderer.sendSync("start-generate",[new_file_path,old_file_path]);
+				if(result[0]){
+					
+				}else{
+					alert(result[1])
+				}
+			})
+			ipcRenderer.on("finished",(evt,args)=>{
+				
+			});
+			ipcRenderer.on("progress",(evt,args)=>{
+				//console.log(args)
+				var p=args.toFixed(2)*100;
+				console.log(p)
+				$("#pgs").attr("style", "width:"+p+"%");
+			})
+		</script>
+	</body>
+
 </html>
