@@ -1,5 +1,40 @@
 {
   "dependencies": {
-    "detal-zip": "^1.0.5"
-  }
+    "list-dir": "^1.2.0",
+    "md5": "^2.2.1"
+  },
+  "devDependencies": {
+    "electron-builder": "^19.27.3"
+  },
+  "name": "detal-zip-gui",
+  "description": "a tool",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dist": "electron-builder",
+    "pack": "electron-builder --dir"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sanwuthree/detal-zip-gui.git"
+  },
+  "author": "three",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sanwuthree/detal-zip-gui/issues"
+  },
+  "build": {
+    "appId": "dzg.sanwuthree.org",
+    "asar": false,
+    "files": [
+      "!*.md",
+      "!.vscode",
+      "!tmp"
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "homepage": "https://github.com/Sanwuthree/detal-zip-gui#readme"
 }
