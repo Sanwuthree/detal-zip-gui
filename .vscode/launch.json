@@ -4,8 +4,8 @@
             {
                 "type": "node",
                 "request": "launch",
-                "name": "Electron Main",
-                "runtimeExecutable": "C:/Users/xtyga/AppData/Roaming/npm/node_modules/electron/dist/electron.exe",
+                "name": "Electron Main ",
+                "runtimeExecutable": "C:/Users/three/AppData/Roaming/npm/node_modules/electron/dist/electron.exe",
                 "program": "${workspaceRoot}/app.js",
                 "protocol":"legacy"
             },

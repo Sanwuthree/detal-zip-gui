@@ -2,26 +2,32 @@ const { dialog, electron, app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path"), fs = require("fs")
 //const dz=require("detal-zip")
 const child_process = require("child_process");
-
-app.asar_path=path.join(__dirname,"..");
-
+require("md5"),require("list-dir")//为子进程引入相应模块
 let main_window = null;
-let dzc =null;
+let dzc = null;
 app.on("ready", (info) => {
-    init();
+    app.isDevMode=!fs.existsSync(path.join(process.cwd(), "resources"));
     fs.mkdir("tmp", (err) => { })
     main_window = new BrowserWindow({
         width: 800,
         height: 600
     })
     main_window.loadURL(`file://${__dirname}/views/index.html`);
-    //main_window.webContents.openDevTools()
+    //main_window.webContents.openDevTools();
+    init();
 })
 app.on("window-all-closed", () => {
     app.exit()
 })
-function init(){
-    
+function init() {
+    setTimeout(function () {
+        //webConsole("chdir=", process.chdir());
+        webConsole("__dirname="+__dirname);
+        webConsole("cwd="+process.cwd());
+    }, 2000);
+}
+function webConsole(msg) {
+    main_window.webContents.send("alert", msg);
 }
 ipcMain.on("start-generate", (evt, args) => {
     console.log(args);
@@ -43,27 +49,28 @@ ipcMain.on("start-generate", (evt, args) => {
                                     return;
                                 }
                                 evt.returnValue = [true, filename];
-                                main_window.webContents.send("alert", __dirname);
-                                let task_path = path.join(__dirname,"task.js");
-                                if(fs.existsSync(task_path)){
-                                    main_window.webContents.send("alert", "find "+task_path);
-                                }else{
-                                    main_window.webContents.send("alert", "not find "+task_path);
-                                }
-                                dzc= child_process.fork(path.join(__dirname,"task.js"));
-                                main_window.webContents.send("progress", 0);
+                                webConsole("task_path ="+`${__dirname}/task.js`)
+                                //启动Task fork 子线程
+                                dzc = child_process.fork(`${__dirname}/task.js`)
+                                .on("close",(code,signal)=>{
+                                    webConsole("task fork closed "+code+"  "+signal)
+                                })
+                                .on("error",(err)=>{
+                                    webConsole("task fork error"+err.message)
+                                })
 
+                                main_window.webContents.send("progress", 0);
                                 dzc.on("message", (m, s) => {
                                     if (m.pgs) {
                                         main_window.webContents.send("progress", m.pgs);
                                     } else if (m.msg) {
                                         console.log(m.msg)
                                         main_window.webContents.send("alert", m.msg);
-                                    }else if(m.finished){
+                                    } else if (m.finished) {
                                         main_window.webContents.send("finished", m.finished);
                                     }
                                 });
-                            
+
                                 dzc.send([newfile, oldfile, filename]);
                             })
                         } else {

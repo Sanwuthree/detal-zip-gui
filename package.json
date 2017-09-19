@@ -1,8 +1,4 @@
 {
-  "dependencies": {
-    "list-dir": "^1.2.0",
-    "md5": "^2.2.1"
-  },
   "devDependencies": {
     "electron-builder": "^19.27.3"
   },
@@ -26,15 +22,24 @@
   },
   "build": {
     "appId": "dzg.sanwuthree.org",
-    "asar": false,
+    "asar": true,
     "files": [
       "!*.md",
       "!.vscode",
-      "!tmp"
+      "!tmp",
+      "!icon.psd"
     ],
     "win": {
-      "target": "nsis"
+      "target": "portable",
+      "extraFiles": [
+        "7z.exe",
+        "7z.dll"
+      ]
     }
   },
-  "homepage": "https://github.com/Sanwuthree/detal-zip-gui#readme"
+  "homepage": "https://github.com/Sanwuthree/detal-zip-gui#readme",
+  "dependencies": {
+    "list-dir": "^1.2.0",
+    "md5": "^2.2.1"
+  }
 }
